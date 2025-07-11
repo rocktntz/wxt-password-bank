@@ -1,7 +1,40 @@
-# WXT + Vue 3
+# WXT + Vue 3 密码库 Chrome 插件
 
-This template should help get you started developing with Vue 3 in WXT.
+## 简介
+WXT 密码库是一个基于 WXT 和 Vue 3 开发的 Chrome 插件，用于安全地存储和自动填充网站登录信息。该插件支持登录信息的保存、编辑、删除以及自动填充功能，同时对敏感信息进行加密处理，保障用户数据安全。
 
-## Recommended IDE Setup
+## 功能特性
+- **自动检测登录按钮**：智能识别页面中的登录按钮，在用户登录成功后提示保存登录信息。
+- **自动填充功能**：根据当前页面 URL 匹配密码库中的信息，提供自动填充建议。
+- **数据加密存储**：使用 AES 加密算法对密码进行加密，并混淆键名，确保数据安全。
+- **信息管理**：支持登录信息的新增、编辑和删除操作。
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar).
+
+## 安装依赖
+```bash
+pnpm install
+```
+
+## 启动
+```bash
+pnpm run dev
+```
+
+## 打包
+```bash
+pnpm run build
+pnpm run build:firefox
+pnpm run zip
+```
+## 测试
+安装插件：在 Chrome 浏览器中打开 chrome://extensions/，开启开发者模式，点击“加载已解压的扩展程序”，选择项目构建后的输出目录。
+保存登录信息：当检测到用户登录成功后，会弹出提示框，点击“保存”即可将登录信息保存到密码库。
+自动填充：访问支持自动填充的网站时，插件会在密码库中查找匹配的信息，并显示自动填充建议，点击“填充”即可自动填充用户名和密码。
+管理登录信息：在插件弹出窗口中，可以对登录信息进行新增、编辑和删除操作。
+
+## 加密说明
+本插件使用 CryptoJS 库对密码进行 AES 加密，同时使用 FIELD_MAP 对数据的键名进行混淆，确保数据在存储和传输过程中的安全性。加密密钥为 SECRET_KEY，在实际项目中应更复杂且安全存储。
+
+## 注意事项
+请确保在开发和生产环境中使用不同的加密密钥，并且妥善保管密钥。
+若遇到兼容性问题，请检查浏览器版本是否支持插件所需的 API。
