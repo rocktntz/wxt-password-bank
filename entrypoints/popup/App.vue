@@ -91,13 +91,20 @@ const autofill = async (item: any) => {
 // 保存信息
 const saveBtn = (item: any, type: string) => {
   const obfuscateItem = obfuscatePasswordBank([item])[0];
-  if (["add", "edit", "del"].includes(type)) {
+  if (["add", "edit", "del", "batchAdd"].includes(type)) {
     browser.storage.local.get("global_password_bank").then((res) => {
       const global_password_bank = res.global_password_bank
         ? JSON.parse(res.global_password_bank)
         : [];
       if (type === "add") {
         global_password_bank.push(obfuscateItem);
+      }
+      if (type === "batchAdd") {
+        console.log(item);
+        for (let index = 0; index < item.length; index++) {
+          const element = item[index];
+          global_password_bank.push(element);
+        }
       }
       if (type === "edit" || type === "del") {
         const index = global_password_bank.findIndex(
@@ -136,6 +143,7 @@ onMounted(() => {
       console.log("changes", changes);
       init();
       addPopupRef.value.showAddDialog = false;
+      addPopupRef.value.dialogVisible = false;
       ElMessage.success("操作成功！");
     });
   });

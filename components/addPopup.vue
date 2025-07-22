@@ -7,6 +7,8 @@
       <span class="password-bank-title-text" @click="showAddDialog = false">
         ← {{ operationType === "add" ? "新增" : "编辑" }} 登录
       </span>
+      <!-- <span class="batch-Add">批量新增</span> -->
+      <el-button type="primary" round @click="openBatchAdd">批量新增</el-button>
     </div>
 
     <div class="password-bank-add-content">
@@ -80,10 +82,33 @@
         <el-button type="danger" round @click="del">删除</el-button>
       </div>
     </div>
+
+    <el-dialog v-model="dialogVisible" title="批量新增" width="90%" center>
+      <div>
+        <el-input
+          v-model="jsonData"
+          style="width: 100%"
+          :rows="10"
+          type="textarea"
+          placeholder="请输入json数据"
+        />
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="batchAdd"> 新增 </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script lang="ts" setup>
 import { extractIpFromUrl } from "../entrypoints/popup/utils";
+import {
+  obfuscatePasswordBank,
+  restorePasswordBank,
+} from "../entrypoints/popup/encrypt";
+
 const props = defineProps({
   operationType: {
     type: String,
@@ -168,12 +193,6 @@ const editItem = (item: any, t: string) => {
   showAddDialog.value = true;
 };
 
-defineExpose({
-  showAddDialog,
-  open,
-  editItem,
-});
-
 const emit = defineEmits(["saveBtn"]);
 // 保存
 const submitForm = async (formEl: any) => {
@@ -204,6 +223,49 @@ const cancel = () => {
 const del = () => {
   emit("saveBtn", addRuleForm, type.value);
 };
+
+// 批量新增
+const jsonData = ref("");
+const dialogVisible = ref(false);
+const openBatchAdd = () => {
+  jsonData.value = "";
+  dialogVisible.value = true;
+};
+const isJSON = (str: string) => {
+  if (typeof str !== "string") return false;
+  try {
+    const result = JSON.parse(str);
+    const type = Object.prototype.toString.call(result);
+    return type === "[object Object]" || type === "[object Array]";
+  } catch (e) {
+    return false;
+  }
+};
+const batchAdd = () => {
+  console.log(JSON.parse(jsonData.value), jsonData.value);
+  if (isJSON(jsonData.value)) {
+    type.value = "batchAdd";
+    emit("saveBtn", JSON.parse(jsonData.value), type.value);
+    // let list = restorePasswordBank(JSON.parse(jsonData.value)).filter(
+    //   (item: any) => item.username && item.password && item.projectName
+    // );
+    // for (let i = 0; i < list.length; i++) {
+    //   console.log(list[i]);
+    //   type.value = "add";
+    //   emit("saveBtn", list[i], type.value);
+    // }
+    // type.value = "add";
+    // emit("saveBtn", addRuleForm, type.value);
+  }
+};
+
+defineExpose({
+  showAddDialog,
+  open,
+  editItem,
+  dialogVisible,
+});
+
 </script>
 <style scoped>
 .password-bank-add-container {
@@ -235,6 +297,10 @@ const del = () => {
   display: flex;
   align-items: center;
   cursor: pointer;
+}
+
+.batch-Add {
+  font-size: 14px;
 }
 
 .add-container-show {

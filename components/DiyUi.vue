@@ -78,20 +78,22 @@ onMounted(() => {
     const target = event.target as HTMLElement;
     if (isActualLoginButton(target)) {
       const { username, password } = findAuthFields();
-      loginData.id = Date.now();
-      loginData.projectName = document.title as any;
-      loginData.username = username?.value;
-      loginData.password = password?.value;
-      loginData.autofillUrlList[0] = {
-        url: window.location.href,
-      };
-      sendMessage(
-        "login-button-clicked",
-        {
-          currentUrl: window.location.href,
-        },
-        "background"
-      );
+      if (username && password) {
+        loginData.id = Date.now();
+        loginData.projectName = document.title as any;
+        loginData.username = username?.value;
+        loginData.password = password?.value;
+        loginData.autofillUrlList[0] = {
+          url: window.location.href,
+        };
+        sendMessage(
+          "login-button-clicked",
+          {
+            currentUrl: window.location.href,
+          },
+          "background"
+        );
+      }
     }
   });
 
